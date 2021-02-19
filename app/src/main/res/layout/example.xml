@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OtpVerification"
+    android:background="@drawable/bg_number_otp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/otp_icon"
+            android:layout_width="127dp"
+            android:layout_height="120dp"
+            android:src="@drawable/otp_icon"
+            android:layout_marginTop="100dp"
+            android:contentDescription="TODO" />
+        <TextView
+            android:id="@+id/otp_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="@string/otp_desc"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:padding="15dp"/>
+
+        <com.chaos.view.PinView
+            android:id="@+id/pinview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/PinWidget.PinView"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            app:itemCount="6"
+            android:layout_margin="35dp"
+            app:itemRadius="5dp"
+            android:inputType="number"
+            android:cursorVisible="true"
+            app:itemHeight="50dp"
+            app:itemWidth="50dp"
+            app:lineColor="@color/white"/>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VERIFY"
+            android:layout_gravity="center"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:elevation="10dp"
+            android:layout_marginTop="20dp"
+            android:shadowColor="@color/black"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp" />
+
+    </LinearLayout>
+
+</ScrollView>

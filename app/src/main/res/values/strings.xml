@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Letter</string>
+    <string name="phone_number_description">Please enter your mobile number to receive a verification code.</string>
+    <string name="otp_desc">OTP has been sent to you on you mobile phone. Please enter it below.</string>
+</resources>

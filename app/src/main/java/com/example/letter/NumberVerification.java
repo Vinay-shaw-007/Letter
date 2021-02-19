@@ -41,7 +41,7 @@ public class NumberVerification extends AppCompatActivity {
                 if(phone_number.getText().toString().trim().isEmpty()){
                     Toast.makeText(NumberVerification.this, "Please Enter the Number", Toast.LENGTH_SHORT).show();
                 }
-                else if((Validate_phone(phone_number.getText().toString()))) {
+                else if(!(Validate_phone(phone_number.getText().toString().trim()))) {
                     Toast.makeText(NumberVerification.this, "Enter the Valid Phone Number", Toast.LENGTH_SHORT).show();
 
                 }else{
@@ -58,6 +58,6 @@ public class NumberVerification extends AppCompatActivity {
 
         Pattern p = Pattern.compile("[6-9][0-9]{9}");
         Matcher m =p.matcher(number);
-        return m.matches();
+        return (m.find()&&m.group().equals(number));
     }
 }

@@ -9,9 +9,10 @@ import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class SplashScreen extends AppCompatActivity {
 
-    Window window;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +24,12 @@ public class SplashScreen extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(getApplicationContext(),NumberVerification.class));
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    startActivity(new Intent(getApplicationContext(), HomeScreen.class));
+                }
+                else{
+                    startActivity(new Intent(getApplicationContext(),NumberVerification.class));
+                }
                 finish();
             }
         }, 3 * 1000);

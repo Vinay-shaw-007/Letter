@@ -30,12 +30,12 @@ import java.util.concurrent.TimeUnit;
 
 public class OtpVerification extends AppCompatActivity {
 
-    TextView resend_code;
-    PinView pinView;
-    Button verify;
-    String Phone_number,mVerificationId;
-    FirebaseAuth mAuth;
-    PhoneAuthProvider.ForceResendingToken mResendToken;
+    private TextView resend_code;
+    private PinView pinView;
+    private Button verify;
+    private String Phone_number,mVerificationId;
+    private FirebaseAuth mAuth;
+    private PhoneAuthProvider.ForceResendingToken mResendToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,26 +45,26 @@ public class OtpVerification extends AppCompatActivity {
         pinView = findViewById(R.id.pinview);
         verify = findViewById(R.id.btn_verify);
         resend_code = findViewById(R.id.resend_code);
+        resend_code.setVisibility(View.INVISIBLE);
+        resend_code.setEnabled(false);
         Phone_number = getIntent().getStringExtra("mobile_number");
         mAuth = FirebaseAuth.getInstance();
-//        FirebaseAuth.getInstance().getFirebaseAuthSettings().forceRecaptchaFlowForTesting(true);
-//        FirebaseAuthSettings firebaseAuthSettings = mAuth.getFirebaseAuthSettings();
-//        firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber(Phone_number, pinView.getText().toString().trim());
+
         generateOtp();
-        verify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pinView.getText().toString().isEmpty()){
-                    Toast.makeText(OtpVerification.this, "Enter the code", Toast.LENGTH_SHORT).show();
-                }
-                else if(pinView.getText().toString().length()!=6){
-                    Toast.makeText(OtpVerification.this, "Invalid OTP", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId,pinView.getText().toString().trim());
-                    signInWithPhoneAuthCredential(credential);
-                }
+        verify.setOnClickListener(v -> {
+            if (pinView.getText().toString().isEmpty()){
+                Toast.makeText(OtpVerification.this, "Enter the code", Toast.LENGTH_SHORT).show();
             }
+            else if(pinView.getText().toString().length()!=6){
+                Toast.makeText(OtpVerification.this, "Invalid OTP", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId,pinView.getText().toString().trim());
+                signInWithPhoneAuthCredential(credential);
+            }
+        });
+        resend_code.setOnClickListener(v -> {
+            generateOtp();
         });
 
 
@@ -85,53 +85,33 @@ public class OtpVerification extends AppCompatActivity {
         @Override
         public void onCodeSent(@NonNull String verificationId,
                                @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            // The SMS verification code has been sent to the provided phone number, we
-            // now need to ask the user to enter the code and then construct a credential
-            // by combining the code with a verification ID.
-            Log.d("TAG", "onCodeSent:" + verificationId);
-
-            // Save verification ID and resending token so we can use them later
             mVerificationId = verificationId;
             mResendToken = token;
-
-            // ...
         }
 
         @Override
         public void onVerificationCompleted(PhoneAuthCredential credential) {
-            // This callback will be invoked in two situations:
-            // 1 - Instant verification. In some cases the phone number can be instantly
-            //     verified without needing to send or enter a verification code.
-            // 2 - Auto-retrieval. On some devices Google Play services can automatically
-            //     detect the incoming verification SMS and perform verification without
-            //     user action.
-            //Log.d("TAG", "onVerificationCompleted:" + credential);
-
             signInWithPhoneAuthCredential(credential);
         }
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
-            // This callback is invoked in an invalid request for verification is made,
-            // for instance if the the phone number format is not valid.
-            //Log.w("TAG", "onVerificationFailed", e);
 
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
                 Toast.makeText(OtpVerification.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                // ...
             } else if (e instanceof FirebaseTooManyRequestsException) {
                 Toast.makeText(OtpVerification.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                // The SMS quota for the project has been exceeded
-                // ...
             }
             else
                 Toast.makeText(OtpVerification.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-            // Show a message and update the UI
-            // ...
         }
 
-
+        @Override
+        public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
+            super.onCodeAutoRetrievalTimeOut(s);
+            resend_code.setVisibility(View.VISIBLE);
+            resend_code.setEnabled(true);
+        }
     };
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
@@ -139,21 +119,13 @@ public class OtpVerification extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
-                            FirebaseUser user = task.getResult().getUser();
                             startActivity(new Intent(OtpVerification.this , HomeScreen.class));
                             finish();
 
                         } else {
-                            // Sign in failed, display a message and update the UI
-                            //Log.w("TAG", "signInWithCredential:failure", task.getException());
-
-                                // The verification code entered was invalid
                                 Toast.makeText(OtpVerification.this, ""+task.getException(), Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });
     }
-
 }

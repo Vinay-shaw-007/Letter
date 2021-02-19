@@ -14,5 +14,10 @@
         android:text="Home Screen"
         android:textSize="50dp"
         android:textColor="@color/black"/>
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOGOUT"/>
 
 </LinearLayout>

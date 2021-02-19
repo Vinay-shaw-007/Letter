@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="20dp"
                 android:hint="Phone Number"
-                android:inputType="phone"
+                android:inputType="numberDecimal"
                 android:textSize="20sp"
                 android:textColorHint="@color/white"
                 android:textColor="@color/white" />

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,12 +37,17 @@ public class OtpVerification extends AppCompatActivity {
     private String Phone_number,mVerificationId;
     private FirebaseAuth mAuth;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(ContextCompat.getColor(OtpVerification.this,R.color.black));
         setContentView(R.layout.activity_otp_verification);
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Sending OTP...");
+        dialog.setCancelable(false);
+        dialog.show();
         pinView = findViewById(R.id.pinview);
         verify = findViewById(R.id.btn_verify);
         resend_code = findViewById(R.id.resend_code);
@@ -85,6 +91,7 @@ public class OtpVerification extends AppCompatActivity {
         @Override
         public void onCodeSent(@NonNull String verificationId,
                                @NonNull PhoneAuthProvider.ForceResendingToken token) {
+            dialog.dismiss();
             mVerificationId = verificationId;
             mResendToken = token;
         }

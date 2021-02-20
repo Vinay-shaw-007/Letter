@@ -47,7 +47,7 @@ dependencies {
     implementation 'com.hbb20:ccp:2.4.5'
     //pinview library
     implementation 'com.chaos.view:pinview:1.4.4'
-//    implementation 'com.github.GoodieBag:Pinview:v1.4'
-//    implementation 'io.github.chaosleung:pinview:1.4.4'
-//    implementation 'com.github.aabhasr1:OtpView:v1.1.2'
+    //circle image profile library
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
 }

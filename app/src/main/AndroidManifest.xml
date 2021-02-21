@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Letter">
-        <activity android:name=".SetupProfile"></activity>
+        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".SetupProfile" />
         <activity android:name=".OtpVerification" />
         <activity android:name=".NumberVerification" />
         <activity android:name=".SplashScreen">

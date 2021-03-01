@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/chats"
+        android:icon="@drawable/ic_chat_icon"
+        app:cnb_backgroundColor="@color/design_default_color_primary"
+        app:cnb_iconColor="#FFFFFF"
+        app:cnb_textColor="#FFFFFF"
+        android:title="Chats"/>
+    <item
+        android:id="@+id/status"
+        android:icon="@drawable/ic_charging_circle"
+        app:cnb_backgroundColor="@color/design_default_color_primary"
+        app:cnb_iconColor="#FFFFFF"
+        app:cnb_textColor="#FFFFFF"
+        android:title="Status"/>
+    <item
+        android:id="@+id/calls"
+        android:icon="@drawable/ic_call"
+        app:cnb_backgroundColor="@color/design_default_color_primary"
+        app:cnb_iconColor="#FFFFFF"
+        app:cnb_textColor="#FFFFFF"
+        android:title="Calls"/>
+
+</menu>

@@ -1,4 +1,4 @@
-package com.example.letter;
+package com.example.letter.Models;
 
 public class User {
     private String uid,name,phoneNumber,image_url;

@@ -7,13 +7,24 @@
     android:orientation="vertical"
     tools:context=".HomeActivity">
 
-    <include layout="@layout/action_bar" />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_layout" />
 
-    <com.ismaeldivita.chipnavigation.ChipNavigationBar
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_nav_view"
+        android:layout_below="@id/toolbar"
+        tools:listitem="@layout/row_conversation" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/design_default_color_primary_dark"
-        app:cnb_menuResource="@menu/nav_item"/>
+        app:menu="@menu/nav_item" />
 
 </RelativeLayout>

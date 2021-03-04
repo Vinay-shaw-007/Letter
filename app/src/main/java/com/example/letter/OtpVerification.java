@@ -124,7 +124,7 @@ public class OtpVerification extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             startActivity(new Intent(OtpVerification.this , SetupProfile.class));
-                            finish();
+                            finishAffinity();
 
                         } else {
                                 Toast.makeText(OtpVerification.this, ""+task.getException(), Toast.LENGTH_SHORT).show();

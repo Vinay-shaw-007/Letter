@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserChatActivity"
+    tools:context=".Activities.UserChatActivity"
     android:background="@drawable/chat_gradient_background">
     <include layout="@layout/toolbar_layout"
         android:id="@+id/chat_toolbar"/>
@@ -59,6 +59,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/cardView"

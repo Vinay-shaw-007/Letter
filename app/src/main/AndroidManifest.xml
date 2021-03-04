@@ -9,12 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Letter">
-        <activity android:name=".UserChatActivity"></activity>
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".SetupProfile" />
-        <activity android:name=".OtpVerification" />
-        <activity android:name=".NumberVerification" />
-        <activity android:name=".SplashScreen">
+        <activity android:name=".Activities.UserChatActivity"></activity>
+        <activity android:name=".Activities.HomeActivity" />
+        <activity android:name=".Activities.SetupProfile" />
+        <activity android:name=".Activities.OtpVerification" />
+        <activity android:name=".Activities.NumberVerification" />
+        <activity android:name=".Activities.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,4 +1,4 @@
-package com.example.letter;
+package com.example.letter.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.letter.Adapter.UserAdapter;
 import com.example.letter.Models.User;
+import com.example.letter.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;

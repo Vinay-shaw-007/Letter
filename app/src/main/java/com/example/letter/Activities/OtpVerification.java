@@ -1,4 +1,4 @@
-package com.example.letter;
+package com.example.letter.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaos.view.PinView;
+import com.example.letter.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -39,7 +40,7 @@ public class OtpVerification extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(ContextCompat.getColor(OtpVerification.this,R.color.black));
+        getWindow().setStatusBarColor(ContextCompat.getColor(OtpVerification.this, R.color.black));
         setContentView(R.layout.activity_otp_verification);
         dialog = new ProgressDialog(this);
         dialog.setMessage("Sending OTP...");

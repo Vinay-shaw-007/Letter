@@ -1,19 +1,16 @@
-package com.example.letter;
+package com.example.letter.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.letter.R;
 import com.hbb20.CountryCodePicker;
 
 import java.util.regex.Matcher;
@@ -27,7 +24,7 @@ public class NumberVerification extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(ContextCompat.getColor(NumberVerification.this,R.color.black));
+        getWindow().setStatusBarColor(ContextCompat.getColor(NumberVerification.this, R.color.black));
         setContentView(R.layout.activity_number_verification);
 
         phone_number = findViewById(R.id.user_phone_number);

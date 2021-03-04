@@ -42,24 +42,26 @@ public class UserChatActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.chat_recycler_view);
         setSupportActionBar(toolbar);
         messages = new ArrayList<>();
-        adapter = new MessageAdapter(this, messages);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
         String name = getIntent().getStringExtra("name");
         String receiverUid = getIntent().getStringExtra("uid");
         String senderUid = FirebaseAuth.getInstance().getUid();
         senderRoom = senderUid+receiverUid;
         receiverRoom = receiverUid+senderUid;
+        adapter = new MessageAdapter(this, messages, senderRoom, receiverRoom);
+        recyclerView.setAdapter(adapter);
         database = FirebaseDatabase.getInstance();
         database.getReference().child("chats")
                 .child(senderRoom)
-                .child("messages").addValueEventListener(new ValueEventListener() {
+                .child("messages")
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 messages.clear();
                 for(DataSnapshot snapshot1 : snapshot.getChildren()){
                     Message message = snapshot1.getValue(Message.class);
+                    message.setMessageId(snapshot1.getKey());
                     messages.add(message);
                 }
                 adapter.notifyDataSetChanged();
@@ -74,14 +76,18 @@ public class UserChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String messageTxt = messagebox.getText().toString().trim();
+                if (messageTxt.isEmpty()){
+                    return;
+                }
                 Date date = new Date();
                 Message message = new Message(messageTxt, senderUid, date.getTime());
                 messagebox.setText("");
+                String randomKey = database.getReference().push().getKey();
                 database.getReference()
                         .child("chats")
                         .child(senderRoom)
                         .child("messages")
-                        .push()
+                        .child(randomKey)
                         .setValue(message)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -90,7 +96,7 @@ public class UserChatActivity extends AppCompatActivity {
                                         .child("chats")
                                         .child(receiverRoom)
                                         .child("messages")
-                                        .push()
+                                        .child(randomKey)
                                         .setValue(message)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override

@@ -17,6 +17,7 @@ import com.github.pgreze.reactions.ReactionPopup;
 import com.github.pgreze.reactions.ReactionsConfig;
 import com.github.pgreze.reactions.ReactionsConfigBuilder;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -25,9 +26,12 @@ public class MessageAdapter extends RecyclerView.Adapter{
     Context context;
     ArrayList<Message> messages;
     final int ITEM_SEND=1 , ITEM_RECEIVE=2;
-    public MessageAdapter(Context context, ArrayList<Message> messages) {
+    String senderRoom, receiverRoom;
+    public MessageAdapter(Context context, ArrayList<Message> messages, String senderRoom, String receiverRoom) {
         this.context = context;
         this.messages = messages;
+        this.senderRoom = senderRoom;
+        this.receiverRoom = receiverRoom;
     }
 
     @NonNull
@@ -82,11 +86,29 @@ public class MessageAdapter extends RecyclerView.Adapter{
                 viewHolder.feeling.setImageResource(reactions[pos]);
                 viewHolder.feeling.setVisibility(View.VISIBLE);
             }
+            message.setFeeling(pos);
+            FirebaseDatabase.getInstance().getReference()
+                    .child("chats")
+                    .child(senderRoom)
+                    .child("messages")
+                    .child(message.getMessageId()).setValue(message);
+            FirebaseDatabase.getInstance().getReference()
+                    .child("chats")
+                    .child(receiverRoom)
+                    .child("messages")
+                    .child(message.getMessageId()).setValue(message);
             return true; // true is closing popup, false is requesting a new selection
         });
         if (holder.getClass() == SendViewHolder.class){
             SendViewHolder viewHolder = (SendViewHolder)holder;
             viewHolder.message_send.setText(message.getMessage());
+            if (message.getFeeling() >= 0){
+//                message.setFeeling(reactions[(int) message.getFeeling()]);
+                viewHolder.feeling.setImageResource(reactions[message.getFeeling()]);
+                viewHolder.feeling.setVisibility(View.VISIBLE);
+            }else {
+                viewHolder.feeling.setVisibility(View.GONE);
+            }
             viewHolder.message_send.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -97,6 +119,12 @@ public class MessageAdapter extends RecyclerView.Adapter{
         }else {
             ReceiverViewHolder viewHolder = (ReceiverViewHolder) holder;
             viewHolder.message_receive.setText(message.getMessage());
+            if (message.getFeeling() >= 0){
+                viewHolder.feeling.setImageResource(reactions[message.getFeeling()]);
+                viewHolder.feeling.setVisibility(View.VISIBLE);
+            }else {
+                viewHolder.feeling.setVisibility(View.GONE);
+            }
             viewHolder.message_receive.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -104,6 +132,7 @@ public class MessageAdapter extends RecyclerView.Adapter{
                     return false;
                 }
             });
+
         }
 
     }

@@ -23,8 +23,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 
 public class UserChatActivity extends AppCompatActivity {
 
@@ -32,12 +36,14 @@ public class UserChatActivity extends AppCompatActivity {
     ArrayList<Message> messages;
     String senderRoom, receiverRoom;
     FirebaseDatabase database;
+    RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_chat);
         Toolbar toolbar = findViewById(R.id.chat_toolbar);
         EditText messagebox = findViewById(R.id.messagebox);
+        recyclerView = findViewById(R.id.chat_recycler_view);
         ImageView sendBtn = findViewById(R.id.sendBtn);
         RecyclerView recyclerView = findViewById(R.id.chat_recycler_view);
         setSupportActionBar(toolbar);
@@ -79,10 +85,18 @@ public class UserChatActivity extends AppCompatActivity {
                 if (messageTxt.isEmpty()){
                     return;
                 }
-                Date date = new Date();
-                Message message = new Message(messageTxt, senderUid, date.getTime());
+
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                String date = simpleDateFormat.format(new Date());
+                Message message = new Message(messageTxt, senderUid, date);
                 messagebox.setText("");
                 String randomKey = database.getReference().push().getKey();
+                HashMap<String , Object >  lastMsgObj = new HashMap<>();
+                lastMsgObj.put("lastMsg",message.getMessage());
+                lastMsgObj.put("lastMsgTime", date);
+                database.getReference().child("chats").child(senderRoom).updateChildren(lastMsgObj);
+                database.getReference().child("chats").child(receiverRoom).updateChildren(lastMsgObj);
                 database.getReference()
                         .child("chats")
                         .child(senderRoom)

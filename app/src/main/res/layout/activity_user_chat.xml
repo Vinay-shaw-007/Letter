@@ -35,7 +35,8 @@
                 android:background="@drawable/flag_transparent"
                 android:ems="10"
                 android:hint="Type a message..."
-                android:inputType="textPersonName"
+                android:focusableInTouchMode="true"
+                android:inputType="text"
                 android:padding="8dp"
                 android:textSize="14sp" />
 

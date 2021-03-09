@@ -55,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="20dp"
                 android:hint="Phone Number"
+                android:focusableInTouchMode="true"
                 android:inputType="numberDecimal"
                 android:textSize="20sp"
                 android:textColorHint="@color/white"

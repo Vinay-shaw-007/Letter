@@ -23,10 +23,11 @@ import java.util.ArrayList;
 
 public class MessageAdapter extends RecyclerView.Adapter{
 
-    Context context;
-    ArrayList<Message> messages;
-    final int ITEM_SEND=1 , ITEM_RECEIVE=2;
-    String senderRoom, receiverRoom;
+    private Context context;
+    private ArrayList<Message> messages;
+    private final int ITEM_SEND=1 , ITEM_RECEIVE=2;
+    private String senderRoom, receiverRoom;
+    private boolean tap_on_send = false, tap_on_receive = false;
     public MessageAdapter(Context context, ArrayList<Message> messages, String senderRoom, String receiverRoom) {
         this.context = context;
         this.messages = messages;
@@ -78,13 +79,22 @@ public class MessageAdapter extends RecyclerView.Adapter{
         ReactionPopup popup = new ReactionPopup(context, config, (pos) -> {
             if (holder.getClass() == SendViewHolder.class){
                 SendViewHolder viewHolder = (SendViewHolder)holder;
-                viewHolder.feeling.setImageResource(reactions[pos]);
-                viewHolder.feeling.setVisibility(View.VISIBLE);
+               try{
+                   viewHolder.feeling.setImageResource(reactions[pos]);
+                   viewHolder.feeling.setVisibility(View.VISIBLE);
+               }catch (Exception e) {
+
+               }
             }
             else {
                 ReceiverViewHolder viewHolder = (ReceiverViewHolder)holder;
-                viewHolder.feeling.setImageResource(reactions[pos]);
-                viewHolder.feeling.setVisibility(View.VISIBLE);
+                try {
+                    viewHolder.feeling.setImageResource(reactions[pos]);
+                    viewHolder.feeling.setVisibility(View.VISIBLE);
+                }catch (Exception e){
+
+                }
+
             }
             message.setFeeling(pos);
             FirebaseDatabase.getInstance().getReference()
@@ -112,7 +122,13 @@ public class MessageAdapter extends RecyclerView.Adapter{
             viewHolder.message_send.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    popup.onTouch(v, event);
+                    if (tap_on_send){
+                        viewHolder.feeling.setVisibility(View.INVISIBLE);
+                        tap_on_send=false;
+                    }else {
+                        popup.onTouch(v, event);
+                        tap_on_send=true;
+                    }
                     return false;
                 }
             });
@@ -125,12 +141,15 @@ public class MessageAdapter extends RecyclerView.Adapter{
             }else {
                 viewHolder.feeling.setVisibility(View.GONE);
             }
-            viewHolder.message_receive.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
+            viewHolder.message_receive.setOnTouchListener((v, event) -> {
+                if (tap_on_receive) {
+                    viewHolder.feeling.setVisibility(View.INVISIBLE);
+                    tap_on_receive=false;
+                }else {
                     popup.onTouch(v, event);
-                    return false;
+                    tap_on_receive=true;
                 }
+                return false;
             });
 
         }

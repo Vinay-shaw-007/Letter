@@ -35,6 +35,7 @@
             android:textSize="18sp"
             android:textColor="@color/white"
             app:itemCount="6"
+            android:focusableInTouchMode="true"
             android:layout_margin="35dp"
             app:itemRadius="5dp"
             android:inputType="number"

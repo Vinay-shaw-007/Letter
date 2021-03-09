@@ -63,6 +63,7 @@
                 android:layout_marginBottom="15dp"
                 android:background="@drawable/boundary"
                 android:hint="Enter your name"
+                android:focusableInTouchMode="true"
                 android:singleLine="true"
                 android:padding="15dp"
                 android:textColor="@color/white"

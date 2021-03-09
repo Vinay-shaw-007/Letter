@@ -2,13 +2,13 @@ package com.example.letter.Models;
 
 public class Message {
     private String messageId, message, senderId;
-    private long timeStamp;
+    private String timeStamp;
     private int feeling = -1;
 
     public Message() {
     }
 
-    public Message(String message, String senderId, long timeStamp) {
+    public Message(String message, String senderId, String timeStamp) {
         this.message = message;
         this.senderId = senderId;
         this.timeStamp = timeStamp;
@@ -38,11 +38,11 @@ public class Message {
         this.senderId = senderId;
     }
 
-    public long getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(long timeStamp) {
+    public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
 

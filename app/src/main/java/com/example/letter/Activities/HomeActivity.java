@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.letter.Adapter.UserAdapter;
 import com.example.letter.Models.User;
 import com.example.letter.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -49,7 +50,8 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
                 users.clear();
                 for(DataSnapshot snapshot1 : snapshot.getChildren()){
                     User user = snapshot1.getValue(User.class);
-                    users.add(user);
+                    if (!(user.getUid().equals(FirebaseAuth.getInstance().getUid())))
+                        users.add(user);
                 }
                 mAdapter.notifyDataSetChanged();
             }

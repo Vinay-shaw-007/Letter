@@ -57,6 +57,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     //reaction library
     implementation "com.github.pgreze:android-reactions:1.4"
+    //status library
+    implementation 'com.devlomi:circularstatusview:1.0.1'
 
 
 }

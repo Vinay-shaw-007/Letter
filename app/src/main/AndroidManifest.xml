@@ -10,7 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Letter">
         <activity android:name=".Activities.UserChatActivity"></activity>
-        <activity android:name=".Activities.HomeActivity" />
+        <activity android:name=".Activities.HomeActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity android:name=".Activities.SetupProfile" />
         <activity android:name=".Activities.OtpVerification" />
         <activity android:name=".Activities.NumberVerification" />

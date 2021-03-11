@@ -2,8 +2,10 @@ package com.example.letter.Models;
 
 public class Status {
     private String image,timeStamp;
+
     public Status() {
     }
+
     public Status(String image, String timeStamp) {
         this.image = image;
         this.timeStamp = timeStamp;

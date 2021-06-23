@@ -1,17 +1,19 @@
 package com.example.letter.Models;
 
 public class Message {
-    private String messageId, message, senderId;
+    private String messageId, message, senderId, receiverId, imageUrl, messageKey;
     private String timeStamp;
     private int feeling = -1;
-
+    private boolean isSeen;
     public Message() {
     }
 
-    public Message(String message, String senderId, String timeStamp) {
+    public Message(String message, String senderId, String receiverId, String timeStamp, String messageKey) {
         this.message = message;
         this.senderId = senderId;
+        this.receiverId = receiverId;
         this.timeStamp = timeStamp;
+        this.messageKey = messageKey;
     }
 
     public String getMessageId() {
@@ -52,5 +54,37 @@ public class Message {
 
     public void setFeeling(int feeling) {
         this.feeling = feeling;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getMessageKey() {
+        return messageKey;
+    }
+
+    public void setMessageKey(String messageKey) {
+        this.messageKey = messageKey;
+    }
+
+    public String getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public boolean isSeen() {
+        return isSeen;
+    }
+
+    public void setSeen(boolean seen) {
+        isSeen = seen;
     }
 }

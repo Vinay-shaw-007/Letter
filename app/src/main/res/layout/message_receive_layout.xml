@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rootView"
+    android:layout_marginEnd="50dp">
+
+    <TextView
+        android:id="@+id/same_msg_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="160dp"
+        android:visibility="gone"
+
+        android:background="@drawable/message_date_bg"
+        android:padding="9dp"
+        android:layout_marginBottom="9dp"
+        android:text="04 May 2021" />
+
+    <LinearLayout
+        android:id="@+id/linear_layout_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/same_msg_date"
+
+        android:background="@drawable/message_receive_bg"
+        android:orientation="vertical">
+
+        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+            android:id="@+id/messageET"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autofillHints="hi there im using letter"
+            android:paddingEnd="12dp"
+            android:paddingTop="10dp"
+            android:paddingStart="20dp"
+            android:paddingBottom="10dp"
+            android:text="Hi there i'm using letter"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:visibility="visible" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/chatImage"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_margin="3dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/todo"
+            android:scaleType="centerCrop"
+            android:src="@drawable/my_pic"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/roundedImage" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear_layout_chat"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="5dp"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
+
+        <TextView
+            android:id="@+id/timeTV"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:layout_gravity="start"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:text="7:30 PM"
+            android:textColor="@color/black"
+            android:textSize="10dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

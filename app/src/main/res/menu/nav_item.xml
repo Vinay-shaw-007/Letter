@@ -5,23 +5,34 @@
     <item
         android:id="@+id/chats"
         android:icon="@drawable/ic_chat_icon"
-        app:cnb_backgroundColor="@color/design_default_color_primary"
-        app:cnb_iconColor="#FFFFFF"
-        app:cnb_textColor="#FFFFFF"
-        android:title="Chats"/>
+
+        android:title="@string/chats"/>
+<!--    app:cnb_backgroundColor="@color/design_default_color_primary"-->
+<!--    app:cnb_iconColor="#FFFFFF"-->
+<!--    app:cnb_textColor="#FFFFFF"-->
     <item
         android:id="@+id/status"
         android:icon="@drawable/ic_charging_circle"
-        app:cnb_backgroundColor="@color/design_default_color_primary"
-        app:cnb_iconColor="#FFFFFF"
-        app:cnb_textColor="#FFFFFF"
-        android:title="Status"/>
+
+        android:title="@string/status"/>
+<!--    app:cnb_backgroundColor="@color/design_default_color_primary"-->
+<!--    app:cnb_iconColor="#FFFFFF"-->
+<!--    app:cnb_textColor="#FFFFFF"-->
     <item
         android:id="@+id/calls"
         android:icon="@drawable/ic_call"
-        app:cnb_backgroundColor="@color/design_default_color_primary"
-        app:cnb_iconColor="#FFFFFF"
-        app:cnb_textColor="#FFFFFF"
-        android:title="Calls"/>
+
+        android:title="@string/calls"/>
+<!--    app:cnb_backgroundColor="@color/design_default_color_primary"-->
+<!--    app:cnb_iconColor="#FFFFFF"-->
+<!--    app:cnb_textColor="#FFFFFF"-->
+    <item
+        android:id="@+id/addUsers"
+        android:icon="@drawable/ic_person_add"
+
+        android:title="@string/add_users"/>
+<!--    app:cnb_backgroundColor="@color/design_default_color_primary"-->
+<!--    app:cnb_iconColor="#FFFFFF"-->
+<!--    app:cnb_textColor="#FFFFFF"-->
 
 </menu>

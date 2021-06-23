@@ -9,4 +9,14 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dark_blue">#1E3393</color>
     <color name="light_blue">#1FB9FF</color>
+    <color name="grey">#656464</color>
+    <color name="image_send_bg">#7BE0ED</color>
+    <color name="transparent_toolbar_color">#92000000</color>
+    <color name="bottomScrollColor">#CCE5E0F6</color>
+    <color name="color1">#88BEF5</color>
+    <color name="color2">#83E85A</color>
+    <color name="color3">#FF4B32</color>
+    <color name="color4">#BA53DE</color>
+    <color name="color5">#FF8A5C</color>
+    <color name="chat_background">#3C1FB9FF</color>
 </resources>

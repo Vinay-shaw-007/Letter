@@ -3,4 +3,15 @@
     <string name="phone_number_description">Please enter your mobile number to receive a verification code.</string>
     <string name="otp_desc">OTP has been sent to you on you mobile phone. Please enter it below.</string>
     <string name="profile_info">Profile Info</string>
+    <string name="search">Search</string>
+    <string name="add_users">Add Users</string>
+    <string name="calls">Calls</string>
+    <string name="status">Status</string>
+    <string name="chats">Chats</string>
+    <string name="download">Download</string>
+    <string name="online">Online</string>
+    <string name="user_name">User Name</string>
+    <string name="todo">TODO</string>
+    <string name="type_a_message">Type a message…</string>
+    <string name="msg_token_fmt">Token</string>
 </resources>

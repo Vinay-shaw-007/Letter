@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="icons">
+        <item>@drawable/ic_gallery</item>
+        <item>@drawable/ic_photo_camera</item>
+    </array>
+
+    <array name="colors">
+        <item>@color/color1</item>
+        <item>@color/color2</item>
+    </array>
+
+
+</resources>

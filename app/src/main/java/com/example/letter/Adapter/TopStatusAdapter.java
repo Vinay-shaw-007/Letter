@@ -1,6 +1,7 @@
 package com.example.letter.Adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,14 @@ public class TopStatusAdapter extends RecyclerView.Adapter<TopStatusAdapter.TopS
         UserStatus userStatus = userStatuses.get(position);
 
         Status lastStatus = userStatus.getStatuses().get(userStatus.getStatuses().size() -1);
-        Glide.with(context).load(lastStatus.getImage()).into(holder.circleImageView);
+        Uri lastStatusImage = Uri.parse(lastStatus.getImage());
+        Log.d("lastImage", "onBindViewHolder: "+lastStatusImage);
+        try{
+            Glide.with(context).load(lastStatusImage).into(holder.circleImageView);
+        }catch (Exception e){
+            Log.d("Exception", "onBindViewHolder: "+e);
+        }
+
         holder.circularStatusView.setPortionsCount(userStatus.getStatuses().size());
 
         holder.circularStatusView.setOnClickListener(new View.OnClickListener() {

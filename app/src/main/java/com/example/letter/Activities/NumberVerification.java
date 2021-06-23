@@ -52,7 +52,6 @@ public class NumberVerification extends AppCompatActivity {
     }
 
     private boolean Validate_phone(String number) {
-
         Pattern p = Pattern.compile("[6-9][0-9]{9}");
         Matcher m =p.matcher(number);
         return (m.find()&&m.group().equals(number));

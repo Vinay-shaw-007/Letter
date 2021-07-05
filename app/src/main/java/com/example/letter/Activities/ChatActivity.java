@@ -1,6 +1,7 @@
 package com.example.letter.Activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -337,7 +342,7 @@ public class ChatActivity extends AppCompatActivity {
             imageUri = FileProvider.getUriForFile(ChatActivity.this, "com.example.letter.fileprovider", imageFile);
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            startActivityForResult(intent, REQUEST_CAMERA_PIC);
+            requestCamera.launch(intent);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -345,53 +350,55 @@ public class ChatActivity extends AppCompatActivity {
 
     private void selectImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(intent, REQUEST_FILE);
+        requestFile.launch(intent);
+
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_FILE && resultCode == RESULT_OK && data != null && data.getData() != null){
-            Uri uri1 = data.getData();
-            imageUploading.show();
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("chats").child(myUid.getUid());
-            storageReference.putFile(uri1).addOnCompleteListener(task ->
-                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String randomKey, imageUrl, date;
-                        randomKey = database.getReference().push().getKey();
-                        date = System.currentTimeMillis()+"";
-                        imageUrl = uri.toString();
-                        Message message = new Message("Photo",myUid.getUid(),hisUid,date,randomKey);
-                        message.setImageUrl(imageUrl);
-                        database.getReference().child("DashBoard").child(myUid.getUid()).child(hisUid).child("chats").child("messages").child(Objects.requireNonNull(randomKey)).setValue(message)
-                                .addOnSuccessListener(aVoid ->
-                                        database.getReference().child("DashBoard").child(hisUid).child(myUid.getUid()).child("chats").child("messages").child(randomKey).setValue(message)
-                                        .addOnSuccessListener(aVoid1 -> imageUploading.dismiss()));
-                    }));
-        }else if (requestCode == REQUEST_CAMERA_PIC  && resultCode == RESULT_OK){
-            imageUploading.show();
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("chats").child(myUid.getUid());
-            storageReference.putFile(imageUri).addOnCompleteListener(task ->
-                    storageReference.getDownloadUrl().addOnSuccessListener(uriImage1 -> {
-                        String randomKey, imageUrl, date;
-                        randomKey = database.getReference().push().getKey();
-                        date = System.currentTimeMillis()+"";
-                        imageUrl = uriImage1.toString();
-                        Message message = new Message("Photo",myUid.getUid(),hisUid,date,randomKey);
-                        message.setImageUrl(imageUrl);
-                        database.getReference().child("DashBoard").child(myUid.getUid()).child(hisUid).child("chats").child("messages").child(Objects.requireNonNull(randomKey)).setValue(message)
-                                .addOnSuccessListener(aVoid ->
-                                        database.getReference().child("DashBoard").child(hisUid).child(myUid.getUid()).child("chats").child("messages").child(randomKey).setValue(message)
-                                                .addOnSuccessListener(aVoid1 -> imageUploading.dismiss()));
-                    }))
-            .addOnFailureListener(e -> {
-                Toast.makeText(ChatActivity.this, ""+e, Toast.LENGTH_SHORT).show();
-                Log.d("cameraImage", "onFailure: "+e);
-                Log.d("cameraImage", "onFailure: "+currentPhotoPath);
-                Log.d("cameraImage", "onFailure: "+imageUri);
-            });
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+////        if (requestCode == REQUEST_FILE && resultCode == RESULT_OK && data != null && data.getData() != null){
+////            Uri uri1 = data.getData();
+////            imageUploading.show();
+////            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("chats").child(myUid.getUid());
+////            storageReference.putFile(uri1).addOnCompleteListener(task ->
+////                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+////                        String randomKey, imageUrl, date;
+////                        randomKey = database.getReference().push().getKey();
+////                        date = System.currentTimeMillis()+"";
+////                        imageUrl = uri.toString();
+////                        Message message = new Message("Photo",myUid.getUid(),hisUid,date,randomKey);
+////                        message.setImageUrl(imageUrl);
+////                        database.getReference().child("DashBoard").child(myUid.getUid()).child(hisUid).child("chats").child("messages").child(Objects.requireNonNull(randomKey)).setValue(message)
+////                                .addOnSuccessListener(aVoid ->
+////                                        database.getReference().child("DashBoard").child(hisUid).child(myUid.getUid()).child("chats").child("messages").child(randomKey).setValue(message)
+////                                        .addOnSuccessListener(aVoid1 -> imageUploading.dismiss()));
+////                    }));
+////        }
+////        else if (requestCode == REQUEST_CAMERA_PIC  && resultCode == RESULT_OK){
+////            imageUploading.show();
+////            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("chats").child(myUid.getUid());
+//            storageReference.putFile(imageUri).addOnCompleteListener(task ->
+//                    storageReference.getDownloadUrl().addOnSuccessListener(uriImage1 -> {
+////                        String randomKey, imageUrl, date;
+////                        randomKey = database.getReference().push().getKey();
+////                        date = System.currentTimeMillis()+"";
+////                        imageUrl = uriImage1.toString();
+////                        Message message = new Message("Photo",myUid.getUid(),hisUid,date,randomKey);
+////                        message.setImageUrl(imageUrl);
+////                        database.getReference().child("DashBoard").child(myUid.getUid()).child(hisUid).child("chats").child("messages").child(Objects.requireNonNull(randomKey)).setValue(message)
+////                                .addOnSuccessListener(aVoid ->
+////                                        database.getReference().child("DashBoard").child(hisUid).child(myUid.getUid()).child("chats").child("messages").child(randomKey).setValue(message)
+////                                                .addOnSuccessListener(aVoid1 -> imageUploading.dismiss()));
+////                    }))
+////            .addOnFailureListener(e -> {
+////                Toast.makeText(ChatActivity.this, ""+e, Toast.LENGTH_SHORT).show();
+////                Log.d("cameraImage", "onFailure: "+e);
+////                Log.d("cameraImage", "onFailure: "+currentPhotoPath);
+////                Log.d("cameraImage", "onFailure: "+imageUri);
+////            });
+////        }
+//    }
 
     private void sendMessage() {
         scrollView.post(() ->
@@ -443,7 +450,6 @@ public class ChatActivity extends AppCompatActivity {
         //initializing firebase
         database = FirebaseDatabase.getInstance();
         myUid = FirebaseAuth.getInstance().getCurrentUser();
-
         //initializing arrayList of messages
         mMessages = new ArrayList<>();
 
@@ -472,6 +478,7 @@ public class ChatActivity extends AppCompatActivity {
 
         //calling apiServices
         apiService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
+
     }
 
     private void setOtherUserDetails() {
@@ -598,4 +605,61 @@ public class ChatActivity extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
+
+    ActivityResultLauncher<Intent> requestCamera = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null){
+                Intent data = result.getData();
+                Uri imageUri1 = data.getData();
+                imageUploading.show();
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("chats").child(myUid.getUid());
+                storageReference.putFile(imageUri1).addOnCompleteListener(task ->
+                        storageReference.getDownloadUrl().addOnSuccessListener(uriImage1 -> {
+                            String randomKey, imageUrl, date;
+                            randomKey = database.getReference().push().getKey();
+                            date = System.currentTimeMillis()+"";
+                            imageUrl = uriImage1.toString();
+                            Message message = new Message("Photo",myUid.getUid(),hisUid,date,randomKey);
+                            message.setImageUrl(imageUrl);
+                            database.getReference().child("DashBoard").child(myUid.getUid()).child(hisUid).child("chats").child("messages").child(Objects.requireNonNull(randomKey)).setValue(message)
+                                    .addOnSuccessListener(aVoid ->
+                                            database.getReference().child("DashBoard").child(hisUid).child(myUid.getUid()).child("chats").child("messages").child(randomKey).setValue(message)
+                                                    .addOnSuccessListener(aVoid1 -> imageUploading.dismiss()));
+                        }))
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(ChatActivity.this, ""+e, Toast.LENGTH_SHORT).show();
+                            Log.d("cameraImage", "onFailure: "+e);
+                            Log.d("cameraImage", "onFailure: "+currentPhotoPath);
+                            Log.d("cameraImage", "onFailure: "+imageUri);
+                        });
+            }
+
+        }
+    }) ;
+    ActivityResultLauncher<Intent> requestFile = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null){
+                Intent data = result.getData();
+                Uri uri1 = data.getData();
+                imageUploading.show();
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("chats").child(myUid.getUid());
+                storageReference.putFile(uri1).addOnCompleteListener(task ->
+                        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String randomKey, imageUrl, date;
+                            randomKey = database.getReference().push().getKey();
+                            date = System.currentTimeMillis()+"";
+                            imageUrl = uri.toString();
+                            Message message = new Message("Photo",myUid.getUid(),hisUid,date,randomKey);
+                            message.setImageUrl(imageUrl);
+                            database.getReference().child("DashBoard").child(myUid.getUid()).child(hisUid).child("chats").child("messages").child(Objects.requireNonNull(randomKey)).setValue(message)
+                                    .addOnSuccessListener(aVoid ->
+                                            database.getReference().child("DashBoard").child(hisUid).child(myUid.getUid()).child("chats").child("messages").child(randomKey).setValue(message)
+                                                    .addOnSuccessListener(aVoid1 -> imageUploading.dismiss()));
+                        }));
+            }
+        }
+    });
+
 }

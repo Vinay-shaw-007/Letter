@@ -3,6 +3,7 @@ package com.example.letter.Adapter;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,6 +71,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                             count = 0;
                             for (DataSnapshot snapshot1: snapshot.getChildren()){
                                 Message message = snapshot1.getValue(Message.class);
+                                assert message != null;
                                 if (!message.isSeen() && message.getSenderId().trim().equals(hisUid)){
                                     count++;
                                 }
@@ -113,11 +115,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("REMOVE");
             builder.setMessage("Are you sure you want to remove "+user.getName()+" ?");
-            builder.setPositiveButton("REMOVE", (dialog, which) ->
+            builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
                     FirebaseDatabase.getInstance().getReference().child("DashBoard")
-                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(user.getUid()).removeValue()
-                    .addOnSuccessListener(aVoid ->
-                            Toast.makeText(context, user.getName()+" removed", Toast.LENGTH_SHORT).show()));
+                            .child(myUid).child(user.getUid()).removeValue()
+                            .addOnSuccessListener(aVoid ->
+                                    Toast.makeText(context, user.getName()+" removed", Toast.LENGTH_SHORT).show());
+                }
+            });
             builder.setNegativeButton("CANCEL",null);
             builder.show();
             return true;

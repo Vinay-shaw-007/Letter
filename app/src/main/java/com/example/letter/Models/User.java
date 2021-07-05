@@ -1,6 +1,8 @@
 package com.example.letter.Models;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String uid,name,phoneNumber,image_url;
 
     public User() {

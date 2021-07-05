@@ -1,15 +1,8 @@
 package com.example.letter.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,8 +11,17 @@ import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.letter.Adapter.FindUserAdapter;
 import com.example.letter.Models.User;
@@ -34,28 +36,33 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class FindUserActivity extends AppCompatActivity implements FindUserAdapter.newUserClicked {
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private ArrayList<User> userList, contactList;
-    private ProgressDialog dialog;
+    private FindUserAdapter mAdapter;
+    private ArrayList<User> userList, contactList, groupMembers;
     private FirebaseDatabase database;
+    private boolean from_group;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_user);
         Toolbar toolbar = findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add Users");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Add Users");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        from_group = getIntent().getBooleanExtra("addMembers", false);
+        if (getIntent() != null && getIntent().getExtras() != null && getIntent().hasExtra("groupMembers")){
+            Bundle bundle = getIntent().getExtras();
+            groupMembers = (ArrayList<User>) bundle.getSerializable("groupMembers");
+            FindUserAdapter.setSelectedMembers(groupMembers);
+        }
         database = FirebaseDatabase.getInstance();
 
-        dialog = new ProgressDialog(this);
+        ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(true);
         dialog.setMessage("Loading Users");
 
@@ -163,18 +170,21 @@ public class FindUserActivity extends AppCompatActivity implements FindUserAdapt
 
     private String getCountryIS(){
         String ISO = null;
-        TelephonyManager manager = (TelephonyManager) getApplicationContext().getSystemService(getApplicationContext().TELEPHONY_SERVICE);
+        getApplicationContext();
+        TelephonyManager manager = (TelephonyManager) getApplicationContext().getSystemService(TELEPHONY_SERVICE);
         if (manager.getNetworkCountryIso() != null){
             if (!manager.getNetworkCountryIso().equals("")){
                 ISO = manager.getNetworkCountryIso();
             }
         }
+        assert ISO != null;
         return IsoToPrefix.getPhone(ISO);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search,menu);
+        if (from_group) getMenuInflater().inflate(R.menu.form_group,menu);
         MenuItem item = menu.findItem(R.id.searchBar);
         android.widget.SearchView searchView = (android.widget.SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -219,21 +229,22 @@ public class FindUserActivity extends AppCompatActivity implements FindUserAdapt
             if(userList.get(j).getName().toLowerCase().startsWith(query.toLowerCase().trim())){
                 searchList.add(userList.get(j));
             }
-            mAdapter = new FindUserAdapter(searchList, FindUserActivity.this, FindUserActivity.this);
+            mAdapter = new FindUserAdapter(searchList, FindUserActivity.this, FindUserActivity.this, from_group);
             mRecyclerView.setAdapter(mAdapter);
             mAdapter.notifyDataSetChanged();
             if (query.equals("")){
-                mAdapter = new FindUserAdapter(userList, FindUserActivity.this, FindUserActivity.this);
+                mAdapter = new FindUserAdapter(userList, FindUserActivity.this, FindUserActivity.this, from_group);
                 mRecyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
             }
+
         }
     }
     private void fetchUsers(){
         mRecyclerView = findViewById(R.id.newUserRV);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new FindUserAdapter(userList, FindUserActivity.this, FindUserActivity.this);
+        mAdapter = new FindUserAdapter(userList, FindUserActivity.this, FindUserActivity.this, from_group);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
@@ -273,5 +284,25 @@ public class FindUserActivity extends AppCompatActivity implements FindUserAdapt
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.done){
+
+            ArrayList<User> selectedMembers1 = FindUserAdapter.getSelectedMembers();
+
+            Intent i = new Intent(this, NewGroup.class);
+            Bundle bundle = new Bundle();
+
+
+            bundle.putSerializable("groupMembers", selectedMembers1);
+
+            i.putExtras(bundle);
+            startActivity(i);
+            overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
+            finish();
+        }
+        return true;
     }
 }

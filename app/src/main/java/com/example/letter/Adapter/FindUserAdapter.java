@@ -4,9 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -14,19 +16,22 @@ import com.example.letter.Models.User;
 import com.example.letter.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FindUserAdapter extends RecyclerView.Adapter<FindUserAdapter.viewHolder>{
 
     ArrayList<User> userList;
+    static ArrayList<User> selectedMembers;
     Context context;
     newUserClicked newUserClicked;
-    public FindUserAdapter(ArrayList<User> userList, Context context, newUserClicked newUserClicked) {
+    boolean from_group;
+    public FindUserAdapter(ArrayList<User> userList, Context context, newUserClicked newUserClicked, boolean from_group) {
         this.userList = userList;
         this.context = context;
         this.newUserClicked = newUserClicked;
+        this.from_group = from_group;
+        selectedMembers = new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -49,6 +54,30 @@ public class FindUserAdapter extends RecyclerView.Adapter<FindUserAdapter.viewHo
         }else {
             Glide.with(context).load(user.getImage_url()).placeholder(R.drawable.avatar).into(holder.user_image);
         }
+        if (from_group){
+            holder.checkBox.setVisibility(View.VISIBLE);
+            for (User i: selectedMembers) {
+                holder.checkBox.setChecked(true);
+            }
+            holder.checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (selectedMembers.contains(user)) {
+                        selectedMembers.remove(user);
+                    } else {
+                        selectedMembers.add(user);
+                    }
+                }
+            });
+        }
+    }
+
+    public static void setSelectedMembers(ArrayList<User> gm){
+        selectedMembers = gm;
+    }
+
+    public static ArrayList<User> getSelectedMembers(){
+        return selectedMembers;
     }
 
     @Override
@@ -60,15 +89,20 @@ public class FindUserAdapter extends RecyclerView.Adapter<FindUserAdapter.viewHo
         CircleImageView user_image;
         TextView userName,userNumber,chat_time;
         newUserClicked newUserClicked;
+        CheckBox checkBox;
         public viewHolder(@NonNull View itemView, FindUserAdapter.newUserClicked newUserClicked) {
             super(itemView);
             user_image = itemView.findViewById(R.id.user_image);
             userName = itemView.findViewById(R.id.user_name);
             userNumber = itemView.findViewById(R.id.last_msg);
             chat_time = itemView.findViewById(R.id.chat_time);
+            checkBox = itemView.findViewById(R.id.checkbox);
             chat_time.setVisibility(View.GONE);
-            this.newUserClicked = newUserClicked;
-            itemView.setOnClickListener(this);
+            if (!from_group){
+                this.newUserClicked = newUserClicked;
+                itemView.setOnClickListener(this);
+            }
+
         }
 
         @Override

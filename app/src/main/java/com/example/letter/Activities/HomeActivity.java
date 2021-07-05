@@ -2,22 +2,28 @@ package com.example.letter.Activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
+import android.net.Network;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,14 +35,9 @@ import com.example.letter.Adapter.UserAdapter;
 import com.example.letter.Models.Status;
 import com.example.letter.Models.User;
 import com.example.letter.Models.UserStatus;
-import com.example.letter.Notification.FirebaseService;
 import com.example.letter.Notification.Token;
 import com.example.letter.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,12 +45,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceIdReceiver;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,22 +67,22 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
     private ProgressDialog progressDialog;
     private FirebaseUser mUser;
     private User user;
+    private ConnectivityManager connectivityManager;
+    private Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-//        navigationView.setItemIconTintList(null);
-        checkNetworkConnection(this);
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading image...");
         progressDialog.setCancelable(false);
         Toolbar toolbar = findViewById(R.id.toolbar);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         setSupportActionBar(toolbar);
-//        getPermission();
         database = FirebaseDatabase.getInstance();
         mUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        database.getReference().child("DashBoard");
         getToken();
 
 
@@ -110,13 +108,13 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
         statusRecyclerView.setAdapter(statusAdapter);
         ((ShimmerRecyclerView)mRecyclerView).showShimmerAdapter();
         ((ShimmerRecyclerView)statusRecyclerView).showShimmerAdapter();
-        database.getReference().child("DashBoard").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        database.getReference().child("DashBoard").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 users.clear();
                 for(DataSnapshot snapshot1 : snapshot.getChildren()){
                     User user = snapshot1.getValue(User.class);
-                    if (!(user.getUid().equals(FirebaseAuth.getInstance().getUid())))
+                    if (!(Objects.requireNonNull(user).getUid().equals(FirebaseAuth.getInstance().getUid())))
                         users.add(user);
                 }
                 ((ShimmerRecyclerView)mRecyclerView).hideShimmerAdapter();
@@ -130,12 +128,9 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                bottomItemSelected(item);
-                return false;
-            }
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            bottomItemSelected(item);
+            return false;
         });
 
         database.getReference().child("users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
@@ -164,6 +159,7 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
                         ArrayList<Status> statusList = new ArrayList<>();
                         for (DataSnapshot statusSnapshot:storySnapshot.child("statuses").getChildren()){
                             Status status1 = statusSnapshot.getValue(Status.class);//statuses
+                            assert status1 != null;
                             Log.d("Shaw", "onDataChange: ImageUrl "+status1.getImage());
                             statusList.add(status1);
                         }
@@ -180,6 +176,7 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
             }
         });
     }
+
 
     private void getToken() {
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
@@ -217,61 +214,17 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
                 Intent i = new Intent();
                 i.setType("*/*");
                 i.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(i, 50);
+//                startActivityForResult(i, 50);
+                image.launch(i);
                 break;
             case R.id.addUsers:
                 startActivity(new Intent(this, FindUserActivity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + item.getItemId());
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data != null && data.getData() != null){
-            progressDialog.show();
-            Date date = new Date();
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference reference= storage.getReference().child("status").child(date.getTime()+"");
-            reference.putFile(data.getData()).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            UserStatus userStatus = new UserStatus();
-                            userStatus.setName(user.getName());
-                            userStatus.setProfileImage(user.getImage_url());
-                            userStatus.setLastUpdated(date.getTime());
-
-                            HashMap<String , Object> obj = new HashMap<>();
-                            obj.put("name", userStatus.getName());
-                            obj.put("profileImage", userStatus.getProfileImage());
-                            obj.put("lastUpdated", userStatus.getLastUpdated());
-                            String imageUrl = uri.toString();
-                            Status status = new Status(imageUrl, userStatus.getLastUpdated()+"");
-                            Log.d("Vinay", "onSuccess: ImageUrl "+status.getImage());
-                            Log.d("Vinay", "onSuccess: timeStamp "+status.getTimeStamp());
-
-                            database.getReference().child("stories")
-                                    .child(FirebaseAuth.getInstance().getUid())
-                                    .updateChildren(obj);
-
-                            database.getReference().child("stories")
-                                    .child(FirebaseAuth.getInstance().getUid())
-                                    .child("statuses")
-                                    .push()
-                                    .setValue(status);
-
-                            progressDialog.dismiss();
-                        }
-                    });
-                }
-            });
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.topmenu,menu);
@@ -283,10 +236,12 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.search:
-                Toast.makeText(this, "Search Clicked ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Search Clicked 2", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.new_group:
-                Toast.makeText(this, "New Group Clicked 9", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "New Group Clicked", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(HomeActivity.this, NewGroup.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
                 break;
             case R.id.invite:
                 Toast.makeText(this, "Invite Clicked", Toast.LENGTH_SHORT).show();
@@ -317,35 +272,93 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
         editor.putString("Current_USERID", mUser.getUid());
         editor.apply();
         super.onResume();
+        registerNetworkCallback();
         String currentUserId = FirebaseAuth.getInstance().getUid();
-        database.getReference().child("presentStatus").child(currentUserId).setValue("Online");
+        database.getReference().child("presentStatus").child(Objects.requireNonNull(currentUserId)).setValue("Online");
     }
 
     @Override
     protected void onPause() {
         String currentUserId = FirebaseAuth.getInstance().getUid();
-        database.getReference().child("presentStatus").child(currentUserId).setValue("Offline");
+        database.getReference().child("presentStatus").child(Objects.requireNonNull(currentUserId)).setValue("Offline");
         super.onPause();
+        unRegisterNetworkCallback();
     }
 
-    private void getPermission() {
-        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_CONTACTS},1);
-    }
-    private void checkNetworkConnection(HomeActivity chatActivity) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) chatActivity.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mobileInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (((wifiInfo == null || !wifiInfo.isConnected()) && (mobileInfo == null || !mobileInfo.isConnected()))) {
-            showCustomDialog();
+    private void registerNetworkCallback() {
+
+        Log.d("NetworkState", "registerNetworkCallback: ");
+        try {
+            connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+            connectivityManager.registerDefaultNetworkCallback(new ConnectivityManager.NetworkCallback(){
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    if (dialog != null) dialog.dismiss();
+                    Toast.makeText(HomeActivity.this, "Connected1", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onLost(@NonNull Network network) {
+                    Toast.makeText(HomeActivity.this, "No Internet Connection1", Toast.LENGTH_SHORT).show();
+                    showCustomDialog();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
-    private void showCustomDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Please connect to the internet to proceed further")
-                .setCancelable(false)
-                .setPositiveButton("Connect", (dialog, which) -> startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)))
-                .setNegativeButton("Cancel", (dialog, which) -> finishAffinity());
+    private void unRegisterNetworkCallback(){
+        connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback());
     }
 
+    private void showCustomDialog() {
+        dialog = new Dialog(HomeActivity.this);
+        dialog.setContentView(R.layout.check_newtork_conncetion);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+        dialog.show();
+
+    }
+        ActivityResultLauncher<Intent> image = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null){
+                    Intent data = result.getData();
+                    progressDialog.show();
+                    Date date = new Date();
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference reference= storage.getReference().child("status").child(date.getTime()+"");
+                    reference.putFile(data.getData()).addOnCompleteListener(task -> reference.getDownloadUrl().addOnSuccessListener(uri -> {
+                        UserStatus userStatus = new UserStatus();
+                        userStatus.setName(user.getName());
+                        userStatus.setProfileImage(user.getImage_url());
+                        userStatus.setLastUpdated(date.getTime());
+
+                        HashMap<String , Object> obj = new HashMap<>();
+                        obj.put("name", userStatus.getName());
+                        obj.put("profileImage", userStatus.getProfileImage());
+                        obj.put("lastUpdated", userStatus.getLastUpdated());
+                        String imageUrl = uri.toString();
+                        Status status = new Status(imageUrl, userStatus.getLastUpdated()+"");
+                        Log.d("Vinay", "onSuccess: ImageUrl "+status.getImage());
+                        Log.d("Vinay", "onSuccess: timeStamp "+status.getTimeStamp());
+
+                        database.getReference().child("stories")
+                                .child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                                .updateChildren(obj);
+
+                        database.getReference().child("stories")
+                                .child(FirebaseAuth.getInstance().getUid())
+                                .child("statuses")
+                                .push()
+                                .setValue(status);
+
+                        progressDialog.dismiss();
+                    }));
+                }
+            }
+        });
 }

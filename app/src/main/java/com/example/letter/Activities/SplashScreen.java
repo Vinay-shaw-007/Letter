@@ -26,7 +26,7 @@ public class SplashScreen extends AppCompatActivity {
 
         new Handler().postDelayed(() -> {
             if (FirebaseAuth.getInstance().getUid() != null){
-               startActivity(new Intent(SplashScreen.this, HomeActivity.class));
+               startActivity(new Intent(SplashScreen.this, DashBoardActivity.class));
             }else {
                 startActivity(new Intent(SplashScreen.this, NumberVerification.class));
             }

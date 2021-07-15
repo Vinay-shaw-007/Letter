@@ -23,6 +23,8 @@
         android:theme="@style/Theme.Letter"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup">
+        <activity android:name=".Activities.DashBoardActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
         <activity android:name=".Activities.NewGroup" />
         <activity android:name=".Activities.ChatActivity" />
         <activity android:name=".Activities.ShowImageActivity" />

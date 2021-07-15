@@ -80,6 +80,7 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
         Toolbar toolbar = findViewById(R.id.toolbar);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         setSupportActionBar(toolbar);
+//        Objects.requireNonNull(getSupportActionBar()).setTitle("Letter");
         database = FirebaseDatabase.getInstance();
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         database.getReference().child("DashBoard");
@@ -101,7 +102,7 @@ public class HomeActivity extends AppCompatActivity implements UserAdapter.UserI
         statusRecyclerView.setLayoutManager(linearLayoutManager);
 
 
-        mAdapter = new UserAdapter(this, this, users);
+//        mAdapter = new UserAdapter(this, this, users);
         statusAdapter = new TopStatusAdapter(this, statuses);
 
         mRecyclerView.setAdapter(mAdapter);

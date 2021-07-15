@@ -90,7 +90,7 @@ public class SetupProfile extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 dialog.dismiss();
-                                                startActivity(new Intent(SetupProfile.this, HomeActivity.class));
+                                                startActivity(new Intent(SetupProfile.this, DashBoardActivity.class));
                                                 finish();
                                             }
                                         });

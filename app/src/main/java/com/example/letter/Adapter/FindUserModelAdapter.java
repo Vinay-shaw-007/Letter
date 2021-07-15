@@ -8,43 +8,41 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.letter.Models.User;
+import com.example.letter.AddUserRoomArchitecture.AddUserEntity;
 import com.example.letter.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FindUserAdapter extends RecyclerView.Adapter<FindUserAdapter.viewHolder>{
+public class FindUserModelAdapter extends RecyclerView.Adapter<FindUserModelAdapter.viewHolder>{
 
-    ArrayList<User> userList;
-    static ArrayList<User> selectedMembers;
+    ArrayList<AddUserEntity> userList = new ArrayList<>();
     Context context;
     newUserClicked newUserClicked;
-    boolean from_group;
-    public FindUserAdapter(ArrayList<User> userList, Context context, newUserClicked newUserClicked, boolean from_group) {
-        this.userList = userList;
+    public FindUserModelAdapter(Context context, newUserClicked newUserClicked) {
         this.context = context;
         this.newUserClicked = newUserClicked;
-        this.from_group = from_group;
-        selectedMembers = new ArrayList<>();
-        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.row_conversation, parent, false);
-        return new viewHolder(view, newUserClicked);
+        return new viewHolder(view, newUserClicked, userList);
     }
-
+    public void setNewUser(List<AddUserEntity> newUser){
+        userList.clear();
+        userList.addAll(newUser);
+        notifyDataSetChanged();
+    }
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        User user = userList.get(position);
+        AddUserEntity user = userList.get(position);
         holder.userName.setText(user.getName());
         holder.userNumber.setText(user.getPhoneNumber());
 
@@ -54,30 +52,6 @@ public class FindUserAdapter extends RecyclerView.Adapter<FindUserAdapter.viewHo
         }else {
             Glide.with(context).load(user.getImage_url()).placeholder(R.drawable.avatar).into(holder.user_image);
         }
-        if (from_group){
-            holder.checkBox.setVisibility(View.VISIBLE);
-            for (User i: selectedMembers) {
-                holder.checkBox.setChecked(true);
-            }
-            holder.checkBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (selectedMembers.contains(user)) {
-                        selectedMembers.remove(user);
-                    } else {
-                        selectedMembers.add(user);
-                    }
-                }
-            });
-        }
-    }
-
-    public static void setSelectedMembers(ArrayList<User> gm){
-        selectedMembers = gm;
-    }
-
-    public static ArrayList<User> getSelectedMembers(){
-        return selectedMembers;
     }
 
     @Override
@@ -85,12 +59,13 @@ public class FindUserAdapter extends RecyclerView.Adapter<FindUserAdapter.viewHo
         return userList.size();
     }
 
-    public class viewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class viewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CircleImageView user_image;
         TextView userName,userNumber,chat_time;
         newUserClicked newUserClicked;
         CheckBox checkBox;
-        public viewHolder(@NonNull View itemView, FindUserAdapter.newUserClicked newUserClicked) {
+        ArrayList<AddUserEntity> userEntities;
+        public viewHolder(@NonNull View itemView, FindUserModelAdapter.newUserClicked newUserClicked, ArrayList<AddUserEntity> userList) {
             super(itemView);
             user_image = itemView.findViewById(R.id.user_image);
             userName = itemView.findViewById(R.id.user_name);
@@ -98,19 +73,18 @@ public class FindUserAdapter extends RecyclerView.Adapter<FindUserAdapter.viewHo
             chat_time = itemView.findViewById(R.id.chat_time);
             checkBox = itemView.findViewById(R.id.checkbox);
             chat_time.setVisibility(View.GONE);
-            if (!from_group){
-                this.newUserClicked = newUserClicked;
-                itemView.setOnClickListener(this);
-            }
+            this.userEntities = userList;
+            this.newUserClicked = newUserClicked;
+            itemView.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
-            newUserClicked.onUserClicked(userList.get(getAdapterPosition()));
+            newUserClicked.onUserClicked(userEntities.get(getAdapterPosition()));
         }
     }
     public interface newUserClicked{
-        void onUserClicked(User newUser);
+        void onUserClicked(AddUserEntity newUser);
     }
 }

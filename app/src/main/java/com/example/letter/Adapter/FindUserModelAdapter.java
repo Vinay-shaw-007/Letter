@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,12 +21,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FindUserModelAdapter extends RecyclerView.Adapter<FindUserModelAdapter.viewHolder>{
 
+    private static final String TAG = "CHECKING_GROUP";
     ArrayList<AddUserEntity> userList = new ArrayList<>();
+    static ArrayList<AddUserEntity> selectedUser = new ArrayList<>();
     Context context;
     newUserClicked newUserClicked;
-    public FindUserModelAdapter(Context context, newUserClicked newUserClicked) {
+    boolean formGroup;
+
+    public FindUserModelAdapter(Context context, newUserClicked newUserClicked, boolean formGroup) {
         this.context = context;
         this.newUserClicked = newUserClicked;
+        this.formGroup = formGroup;
     }
 
     @NonNull
@@ -35,6 +40,8 @@ public class FindUserModelAdapter extends RecyclerView.Adapter<FindUserModelAdap
         View view = LayoutInflater.from(context).inflate(R.layout.row_conversation, parent, false);
         return new viewHolder(view, newUserClicked, userList);
     }
+
+
     public void setNewUser(List<AddUserEntity> newUser){
         userList.clear();
         userList.addAll(newUser);
@@ -52,6 +59,20 @@ public class FindUserModelAdapter extends RecyclerView.Adapter<FindUserModelAdap
         }else {
             Glide.with(context).load(user.getImage_url()).placeholder(R.drawable.avatar).into(holder.user_image);
         }
+
+        if (formGroup){
+            holder.itemView.setOnClickListener(v -> {
+                if (holder.checkBox.getVisibility() == View.GONE){
+//                    holder.itemView.setBackgroundColor(Color.LTGRAY);
+                    holder.checkBox.setVisibility(View.VISIBLE);
+                }else {
+//                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                    holder.checkBox.setVisibility(View.GONE);
+                }
+                newUserClicked.onUserClicked(user);
+            });
+        }
+
     }
 
     @Override
@@ -59,11 +80,15 @@ public class FindUserModelAdapter extends RecyclerView.Adapter<FindUserModelAdap
         return userList.size();
     }
 
+    public static ArrayList<AddUserEntity> getSelectedMembers(){
+        return selectedUser;
+    }
+
     public static class viewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CircleImageView user_image;
         TextView userName,userNumber,chat_time;
         newUserClicked newUserClicked;
-        CheckBox checkBox;
+        ImageView checkBox;
         ArrayList<AddUserEntity> userEntities;
         public viewHolder(@NonNull View itemView, FindUserModelAdapter.newUserClicked newUserClicked, ArrayList<AddUserEntity> userList) {
             super(itemView);
@@ -76,12 +101,13 @@ public class FindUserModelAdapter extends RecyclerView.Adapter<FindUserModelAdap
             this.userEntities = userList;
             this.newUserClicked = newUserClicked;
             itemView.setOnClickListener(this);
-
         }
 
         @Override
         public void onClick(View v) {
-            newUserClicked.onUserClicked(userEntities.get(getAdapterPosition()));
+            if (v.getId() == itemView.getId()){
+                newUserClicked.onUserClicked(userEntities.get(getAdapterPosition()));
+            }
         }
     }
     public interface newUserClicked{

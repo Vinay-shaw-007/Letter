@@ -1,13 +1,13 @@
 package com.example.letter.Fragment;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,6 +23,7 @@ import com.example.letter.Adapter.FindUserModelAdapter;
 import com.example.letter.AddUserRoomArchitecture.AddUserEntity;
 import com.example.letter.AddUserRoomArchitecture.AddUserViewModel;
 import com.example.letter.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,25 +39,44 @@ public class AddUsersFragment extends Fragment implements  FindUserModelAdapter.
     private FindUserModelAdapter mAdapter;
     private View view;
     private AddUserViewModel viewModel;
+    private Animation rotateOpen, rotateClose, fromBottom, toBottom;
+    private FloatingActionButton floatingAdd, floatingNewGroup;
+    private boolean clicked = false;
+    private boolean formGroup;
     public AddUsersFragment() {
+    }
+    public AddUsersFragment(boolean formGroup) {
+        this.formGroup = formGroup;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        Toast.makeText(getContext(), "fresh 1", Toast.LENGTH_SHORT).show();
         view = inflater.inflate(R.layout.fragment_add_users, container, false);
         hookups();
         setRecyclerView();
         ViewModel();
-//        checkPermission();
+        bottomClicks();
         return view;
     }
+
+    private void bottomClicks() {
+        floatingAdd.setOnClickListener(v -> {
+            clicked = !clicked;
+            onAddButtonClicked();
+        });
+        floatingNewGroup.setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddUsersFragment(true))
+                    .addToBackStack(null).commit();
+            clicked = !clicked;
+            onAddButtonClicked();
+        });
+    }
+
 
     private void ViewModel() {
         viewModel = new ViewModelProvider(this).get(AddUserViewModel.class);
         viewModel.getAllContactUser().observe(getViewLifecycleOwner(), addUserEntities -> {
-            Log.d("FetchContactUsers", "onChanged: "+addUserEntities);
             if (addUserEntities != null) {
                 mAdapter.setNewUser(addUserEntities);
             }
@@ -71,15 +91,18 @@ public class AddUsersFragment extends Fragment implements  FindUserModelAdapter.
 
     private void hookups() {
         mRecyclerView = view.findViewById(R.id.add_users);
-        ProgressDialog dialog = new ProgressDialog(getContext());
-        dialog.setCancelable(false);
-        dialog.setMessage("Fetching Users");
-//        dialog.show();
+        floatingAdd = view.findViewById(R.id.floatingAdd);
+        floatingNewGroup = view.findViewById(R.id.newGroup);
+
+        rotateOpen = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_open_anim);
+        rotateClose = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_close_anim);
+        fromBottom = AnimationUtils.loadAnimation(getContext(), R.anim.from_bottom_anim);
+        toBottom = AnimationUtils.loadAnimation(getContext(), R.anim.to_bottom_anim);
     }
     private void setRecyclerView(){
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new FindUserModelAdapter(getContext(), this);
+        mAdapter = new FindUserModelAdapter(getContext(), this, formGroup);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -132,4 +155,35 @@ public class AddUsersFragment extends Fragment implements  FindUserModelAdapter.
             }
         });
     }
+
+
+    private void onAddButtonClicked() {
+        setVisibility(clicked);
+        setAnimation(clicked);
+        clickable(clicked);
+    }
+
+    private void setAnimation(boolean clicked) {
+        if (clicked){
+            floatingAdd.startAnimation(rotateOpen);
+            floatingNewGroup.startAnimation(fromBottom);
+        }else {
+            floatingNewGroup.startAnimation(toBottom);
+            floatingAdd.startAnimation(rotateClose);
+        }
+    }
+
+    private void setVisibility(boolean clicked) {
+        if (clicked){
+            floatingNewGroup.setVisibility(View.VISIBLE);
+        }else {
+            floatingNewGroup.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void clickable(boolean clicked){
+        floatingNewGroup.setClickable(clicked);
+    }
+
+
 }

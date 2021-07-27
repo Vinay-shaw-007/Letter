@@ -1,7 +1,13 @@
 package com.example.letter.Activities;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -24,12 +30,7 @@ public class DashBoardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dash_board);
         hookups();
         setToolbar();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bottomView();
-            }
-        }).start();
+        new Thread(this::bottomView).start();
 
     }
 
@@ -75,5 +76,33 @@ public class DashBoardActivity extends AppCompatActivity {
             loadFragment(new DashBoardFragment());
             smoothBottomBar.setItemActiveIndex(0);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.topmenu, menu);
+        return true;
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.search:
+                Toast.makeText(this, "Search Clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.new_group:
+                Toast.makeText(this, "New Group Clicked", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(DashBoardActivity.this, NewGroup.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
+                break;
+            case R.id.invite:
+                Toast.makeText(this, "Invite Clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.setting:
+                Toast.makeText(this, "Setting Clicked", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
     }
 }

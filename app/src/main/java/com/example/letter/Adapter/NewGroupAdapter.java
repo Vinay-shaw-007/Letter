@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.letter.Models.User;
+import com.example.letter.AddUserRoomArchitecture.AddUserEntity;
 import com.example.letter.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +22,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class NewGroupAdapter extends RecyclerView.Adapter<NewGroupAdapter.NewGroupViewHolder> {
 
     Context context;
-    ArrayList<User> groupMembers;
+    ArrayList<AddUserEntity> groupMembers;
 
-    public NewGroupAdapter(Context context, ArrayList<User> groupMembers) {
+    public NewGroupAdapter(Context context, ArrayList<AddUserEntity> groupMembers) {
         this.context = context;
         this.groupMembers = groupMembers;
     }
@@ -39,7 +39,7 @@ public class NewGroupAdapter extends RecyclerView.Adapter<NewGroupAdapter.NewGro
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull NewGroupViewHolder holder, int position) {
-        User user = groupMembers.get(position);
+        AddUserEntity user = groupMembers.get(position);
         holder.userName.setText(user.getName());
         holder.userNumber.setText(user.getPhoneNumber());
         if (user.getImage_url().trim().equals("No Image Uploaded")){

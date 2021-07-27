@@ -1,15 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragment.AddUsersFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/add_users"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/row_conversation"/>
+        tools:listitem="@layout/row_conversation">
 
-</FrameLayout>
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/newGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/floatingAdd"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/todo"
+        android:focusable="true"
+        android:src="@drawable/ic_group_add"
+        android:visibility="invisible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:clickable="true"
+        android:contentDescription="@string/todo"
+        android:focusable="true"
+        android:src="@drawable/ic_add" />
+
+    <!--    <com.getbase.floatingactionbutton.FloatingActionsMenu-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:fab_labelStyle="@style/LabelStyle"-->
+    <!--        app:fab_labelsPosition="left"-->
+    <!--        app:fab_expandDirection="up"-->
+    <!--        android:layout_gravity="end|bottom">-->
+
+    <!--        <com.getbase.floatingactionbutton.FloatingActionButton-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            app:fab_colorNormal="@color/white"-->
+    <!--            app:fab_title="New Group"-->
+    <!--            app:fab_colorPressed="#86FFFFFF"-->
+    <!--            app:fab_icon="@drawable/ic_group_add"/>-->
+
+    <!--    </com.getbase.floatingactionbutton.FloatingActionsMenu>-->
+
+
+</RelativeLayout>
